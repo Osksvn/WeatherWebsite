@@ -1,0 +1,41 @@
+<section class="hero is-info is-medium is-bold">
+  <div class="hero-head">
+    <nav class="navbar">
+      <div class="container">
+           <div class="navbar-brand">
+          <a href="/" class="navbar-item">
+           <p class="title">Weather Website</p> 
+          </a>
+          <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="navbarMenuHeroB" class="navbar-menu">
+          <div class="navbar-end">
+            <a href="/" class="navbar-item">
+              Home
+            </a>
+            <a class="navbar-item">
+              Documentation
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="hero-body">
+      <div align="center">
+         <figure class="image is-128x128">
+      <img src="http://openweathermap.org/img/wn/{{icon}}@2x.png" alt="Placeholder image">
+    </figure>
+      <p class="title">{{city}}</p>
+      <p class="title">{{temp}} °C</p>
+      <p class="subtitle">{{weather}}</p>
+      <p class="subtitle">{{description}}</p>
+      </div>
+  </div>
+
+</section>

@@ -1,0 +1,45 @@
+<section class="hero is-large is-danger is-bold">
+      <div class="hero-head">
+    <nav class="navbar">
+      <div class="container">
+           <div class="navbar-brand">
+          <a href="/" class="navbar-item">
+           <p class="title">Weather Website</p> 
+          </a>
+          <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="navbarMenuHeroB" class="navbar-menu">
+          <div class="navbar-end">
+            <a href="/" class="navbar-item">
+              Home
+            </a>
+            <a class="navbar-item">
+              Documentation
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        No city found
+      </h1>
+      <h2 class="subtitle">
+        Please try again
+      </h2>
+      <form method="GET" action="/searchedLocation">
+      <input class="input" name="search" id="search" type="text" placeholder="Search for a city">
+          <div class="control">
+            <br>
+            <button class="button is-primary">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
