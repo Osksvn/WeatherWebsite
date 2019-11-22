@@ -1,0 +1,17 @@
+<section class="section">
+  <div class="container">
+    <div class="row columns is-multiline">
+      {{#if databaseItems.length}}
+      {{#each databaseItems}}
+      <div class="column is-one-third">
+        <div class="card large">
+            <p class="title" >{{name}}</p>
+        </div>
+      </div>
+      {{/each}}
+      {{else}}
+      <p>No city entries</p>
+      {{/if}}
+    </div>
+  </div>
+</section>

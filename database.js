@@ -1,12 +1,12 @@
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('DB/database.db');
+const db = new sqlite3.Database('weatherforecast.db');
 
-db.run('CREATE DATABASE IF NOT EXISTS weatherforecast')
+// db.run('CREATE DATABASE IF NOT EXISTS weatherforecast')
 
-db.run('CREATE TABLE IF NOT EXISTS city(id interger primary key autoincrement, name text)', function(err){
+db.run('CREATE TABLE IF NOT EXISTS city(id integer primary key autoincrement, name text)', function(err){
     if(err) {
-        console.log('error creating city table');
+        console.log('error creating city table' + " " +  err);
     }
     else{
         console.log('city table created successfully !');
@@ -14,9 +14,9 @@ db.run('CREATE TABLE IF NOT EXISTS city(id interger primary key autoincrement, n
 })
 
 
-db.run('CREATE TABLE IF NOT EXISTS temperature(id interger primary key autoincrement, value float, datetime integer, city_id integer foreingn key references city(id) )', function(err){
+db.run('CREATE TABLE IF NOT EXISTS temperature(id integer primary key autoincrement, value float, datetime integer, city_id integer foreingn key references city(id) )', function(err){
     if(err) {
-        console.log('error creating city table');
+        console.log('error creating city table' + " " + err);
     }
     else{
         console.log('city table created successfully !');
@@ -30,4 +30,5 @@ exports.getAllCities = function (callback){
         callback(err, city)
     })
 }
+
 
