@@ -60,6 +60,8 @@ app.get('/', function (req, res) {
   }
   res.render("home.hbs", model)
 
+  defaultWeatherObjects.splice(0, defaultWeatherObjects.length)
+
 });
 
 app.get('/searchedLocation', function (req, res) {
@@ -89,15 +91,6 @@ app.get('/searchedLocation', function (req, res) {
   })
 
 });
-
-app.get('/loginPage', function (req, res) {
-  const model = {
-
-      // csrfToken: request.csrfToken()
-  }
-
-  res.render("loginPage.hbs", model)
-})
 
 app.listen(8080, function () {
   console.log("server listening on port 8080")
