@@ -5,6 +5,8 @@ const request = require('request');
 
 const app = express()
 
+const db = require('./database')
+
 const defaultLocations = {
   0: "New York",
   1: "Bangkok",
@@ -29,6 +31,8 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static('images'))
 
 getDefaultWeather()
+
+getAllCities()
 
 app.get('/', function (req, res) {
 
@@ -124,14 +128,22 @@ function getDefaultWeather() {
   }
 }
 
-function getWeatherByCity(city, callback) {
+function getWeatherByCity(searchedCity, callback) {
 
-  request(`http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
+  const temp = new Temperature()
+
+  request(`http://api.openweathermap.org/data/2.5/weather?q=${searchedCity}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
     if (err) {
       console.log("error:" + err);
     }
     else {
       try {
+        
+        //if statement to check if the city already exists in the database.
+
+        temp.value = (body.main.temp - 273.15).toFixed(1)
+        temp.city = body.name
+        temp.datetime = body.dt;
         searchedWeatherObject.weather = body.weather[0].main
         searchedWeatherObject.description = body.weather[0].description
         searchedWeatherObject.city = body.name
@@ -148,4 +160,8 @@ function getWeatherByCity(city, callback) {
   });
 
 
+}
+
+function getAllCities() {
+  console.log(db.getAllCities);
 }
