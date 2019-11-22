@@ -2,10 +2,9 @@ const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const https = require("https")
 const request = require('request');
-
 const app = express()
-
 const db = require('./database')
+const temp = require('./models/*')
 
 const defaultLocations = {
   0: "New York",
@@ -31,8 +30,6 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static('images'))
 
 getDefaultWeather()
-
-getAllCities()
 
 app.get('/', function (req, res) {
 
@@ -99,14 +96,13 @@ app.get('/searchedLocation', function (req, res) {
 app.get('/database', function(req, res){
 
   db.getAllCities(function(error, city){ 
-    console.log("hello")
     if (error) {
       console.log("error with get all cities")
     } else {
 
       const model = {
 
-        databaseItems: city
+        city: city
     
       }
 
@@ -114,6 +110,24 @@ app.get('/database', function(req, res){
     }
   });
 
+})
+
+app.get('/showCityInfo/:id', function(req, res){
+
+  const id = req.params.id
+  console.log(id)
+  db.getCityById(id, function(city, error){
+    if (error) {
+      console.log(error)
+    } else {
+      console.log(city.name)
+
+      getWeatherByCity(city.name, function(){
+
+        
+      })
+    }
+  })
 })
 
 app.listen(8080, function () {
@@ -150,7 +164,7 @@ function getDefaultWeather() {
 
 function getWeatherByCity(searchedCity, callback) {
 
-  // const temp = new Temperature()
+  const temp = new Temperature()
 
   request(`http://api.openweathermap.org/data/2.5/weather?q=${searchedCity}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
     if (err) {
@@ -161,14 +175,15 @@ function getWeatherByCity(searchedCity, callback) {
         
         //if statement to check if the city already exists in the database.
 
-        // temp.value = (body.main.temp - 273.15).toFixed(1)
-        // temp.city = body.name
-        // temp.datetime = body.dt;
-        searchedWeatherObject.weather = body.weather[0].main
-        searchedWeatherObject.description = body.weather[0].description
-        searchedWeatherObject.city = body.name
-        searchedWeatherObject.temp = (body.main.temp - 273.15).toFixed(1)
-        searchedWeatherObject.icon = body.weather[0].icon
+        temp.value = (body.main.temp - 273.15).toFixed(1)
+        temp.city = body.name
+        temp.datetime = body.dt;
+        
+        // searchedWeatherObject.weather = body.weather[0].main
+        // searchedWeatherObject.description = body.weather[0].description
+        // searchedWeatherObject.city = body.name
+        // searchedWeatherObject.temp = (body.main.temp - 273.15).toFixed(1)
+        // searchedWeatherObject.icon = body.weather[0].icon
         callback();
 
       } catch (error) {
@@ -179,16 +194,5 @@ function getWeatherByCity(searchedCity, callback) {
 
   });
 
-
 }
 
-function getAllCities(callback) {
-
-  db.getAllCities(function(error, city){ 
-    console.log("hello")
-    if (error) {
-      console.log("error with get all cities")
-    } else console.log("the city is: " + city[0].name)
-  });
-
-}

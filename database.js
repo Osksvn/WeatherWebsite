@@ -31,4 +31,19 @@ exports.getAllCities = function (callback){
     })
 }
 
+exports.getCityById = function(id, callback) {
+    const query = 'SELECT name FROM city where id = ?'
+    db.get(query, [id], function(error, name){
+        if (error) {
+            callback(error)
+        } else {
+            callback(name)
+        }
+    })
+
+
+}
+
+
+
 

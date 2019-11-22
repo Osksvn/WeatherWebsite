@@ -1,11 +1,12 @@
 <section class="section">
   <div class="container">
     <div class="row columns is-multiline">
-      {{#if databaseItems.length}}
-      {{#each databaseItems}}
+      {{#if city.length}}
+      {{#each city}}
       <div class="column is-one-third">
         <div class="card large">
             <p class="title" >{{name}}</p>
+            <form method="GET" action="/showCityInfo/{{id}}" ><button class="button" >Show more</button></form>
         </div>
       </div>
       {{/each}}
