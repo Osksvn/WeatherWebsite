@@ -4,7 +4,7 @@ const https = require("https")
 const request = require('request');
 const app = express()
 const db = require('./database')
-const temp = require('./models/*')
+const tempClass = require('./models/*')
 
 const defaultLocations = {
   0: "New York",
@@ -124,7 +124,7 @@ app.get('/showCityInfo/:id', function(req, res){
 
       getWeatherByCity(city.name, function(){
 
-        
+        res.render("searchedLocation.hbs")
       })
     }
   })
@@ -164,7 +164,7 @@ function getDefaultWeather() {
 
 function getWeatherByCity(searchedCity, callback) {
 
-  const temp = new Temperature()
+  const temp = new Temperature
 
   request(`http://api.openweathermap.org/data/2.5/weather?q=${searchedCity}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
     if (err) {
@@ -177,8 +177,9 @@ function getWeatherByCity(searchedCity, callback) {
 
         temp.value = (body.main.temp - 273.15).toFixed(1)
         temp.city = body.name
-        temp.datetime = body.dt;
+        temp.datetime = body.dt
         
+        db.addTemperature(temp)
         // searchedWeatherObject.weather = body.weather[0].main
         // searchedWeatherObject.description = body.weather[0].description
         // searchedWeatherObject.city = body.name
