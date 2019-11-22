@@ -1,4 +1,6 @@
 class Temperature {
+    constructor();
+    
     constructor(id, value, datetime, city) {
         this.id = id;
         this.value = value;
@@ -34,3 +36,5 @@ class Temperature {
         this.city = city;
     }
 }
+
+module.exports = Temperature

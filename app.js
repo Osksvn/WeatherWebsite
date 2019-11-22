@@ -4,7 +4,8 @@ const https = require("https")
 const request = require('request');
 const app = express()
 const db = require('./database')
-const tempClass = require('./models/*')
+const Temperature = require('./models/temperature')
+
 
 const defaultLocations = {
   0: "New York",
