@@ -1,5 +1,4 @@
 class Temperature {
-    constructor();
     
     constructor(id, value, datetime, city) {
         this.id = id;

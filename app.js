@@ -5,14 +5,9 @@ const request = require('request');
 const app = express()
 const db = require('./database')
 const Temperature = require('./models/temperature')
+const Weather = require('./models/weather')
 
-
-const defaultLocations = {
-  0: "New York",
-  1: "Bangkok",
-  2: "Stockholm",
-  3: "Tokyo"
-}
+const defaultLocations = ["New York", "Bangkok", "Stockholm", "Paris"]
 
 const defaultWeatherObjects = []
 var searchedWeatherObject = {
@@ -20,8 +15,11 @@ var searchedWeatherObject = {
   city: "",
   description: "",
   temp: "",
-  icon: ""
+  icon: "",
+  dt: ""
 }
+
+var runOnce = true
 
 app.engine('hbs', expressHandlebars({
   defaultLayout: 'main',
@@ -32,44 +30,26 @@ app.use(express.static('images'))
 
 getDefaultWeather()
 
-app.get('/', function (req, res) {
 
-  getDefaultWeather()
+// --- ROUTERS ---
+app.route('/')
+  .put(function (req, res) {
 
-  const model = {
-
-    weatherOne: defaultWeatherObjects[0].weather,
-    descriptionOne: defaultWeatherObjects[0].description,
-    cityOne: defaultWeatherObjects[0].city,
-    tempOne: defaultWeatherObjects[0].temp,
-    iconOne: defaultWeatherObjects[0].icon,
-    weatherTwo: defaultWeatherObjects[1].weather,
-    descriptionTwo: defaultWeatherObjects[1].description,
-    cityTwo: defaultWeatherObjects[1].city,
-    tempTwo: defaultWeatherObjects[1].temp,
-    iconTwo: defaultWeatherObjects[1].icon,
-    weatherThree: defaultWeatherObjects[2].weather,
-    descriptionThree: defaultWeatherObjects[2].description,
-    cityThree: defaultWeatherObjects[2].city,
-    tempThree: defaultWeatherObjects[2].temp,
-    iconThree: defaultWeatherObjects[2].icon,
-    weatherFour: defaultWeatherObjects[3].weather,
-    descriptionFour: defaultWeatherObjects[3].description,
-    cityFour: defaultWeatherObjects[3].city,
-    tempFour: defaultWeatherObjects[3].temp,
-    iconFour: defaultWeatherObjects[3].icon
-
-  }
-  res.render("home.hbs", model)
-
-  defaultWeatherObjects.splice(0, defaultWeatherObjects.length)
-
-});
+  })
+  .get(function (req, res) {
+    runOnce = true
+    const model = {
+      weather: defaultWeatherObjects
+    }
+    res.render("home.hbs", model)
+    
+  })
 
 app.get('/searchedLocation', function (req, res) {
-
   var model = {}
   const search = req.query.search
+  searchedWeatherObject.weather = ""
+
   getWeatherByCity(search, function () {
 
     if (searchedWeatherObject.weather.length > 0) {
@@ -82,21 +62,76 @@ app.get('/searchedLocation', function (req, res) {
         icon: searchedWeatherObject.icon
       }
 
-      searchedWeatherObject.weather = ""
+      db.getCityIDByName(search, function(error, result){
+          if (error) {
+            console.log("error with getCityIDByName")
+          }
+          else if (result == undefined) {
+            // insert city into database
+            console.log("no city entry, insert city")
+            if (runOnce) {
+              runOnce = false
+            
+            db.insertCity(search, function(error){
+              if(error) {
+                console.log("error")
+              }
+            })
+            db.getCityIDByName(search,function(error, result){
+              if (error) {
+                console.log(error)
+              } else {
+                db.insertWeather(
+                  searchedWeatherObject.weather,
+                  searchedWeatherObject.temp,
+                  searchedWeatherObject.description,
+                  searchedWeatherObject.icon,
+                  searchedWeatherObject.dt,
+                  result.id, function(error){
+                    if (error) console.log(error)
+                  })
+              }
+            })
+          }
+          } else {
+            // only insert weather data
+            if (runOnce) {
+              runOnce = false
+            
+            db.insertWeather(
+              searchedWeatherObject.weather,
+              searchedWeatherObject.temp,
+              searchedWeatherObject.description,
+              searchedWeatherObject.icon,
+              searchedWeatherObject.dt,
+              result.id, function(error){
+                if (error) {
+                  console.log(error)
+                }
+            })
+            console.log("result from app.js: " + result.id)
+          }
+          }
+
+      })
+
+      
 
       res.render("searchedLocation.hbs", model)
 
+
     }
     else {
+
       res.render("errorSearchPage.hbs", {})
     }
   })
 
 });
 
-app.get('/database', function(req, res){
+app.get('/database', function (req, res) {
 
-  db.getAllCities(function(error, city){ 
+  db.getAllCities(function (error, city) {
     if (error) {
       console.log("error with get all cities")
     } else {
@@ -104,7 +139,7 @@ app.get('/database', function(req, res){
       const model = {
 
         city: city
-    
+
       }
 
       res.render("databaseItems.hbs", model)
@@ -113,20 +148,15 @@ app.get('/database', function(req, res){
 
 })
 
-app.get('/showCityInfo/:id', function(req, res){
+app.get('/showCityInfo/:id', function (req, res) {
 
   const id = req.params.id
   console.log(id)
-  db.getCityById(id, function(city, error){
+  db.getCityNameById(id, function (city, error) {
     if (error) {
       console.log(error)
     } else {
-      console.log(city.name)
 
-      getWeatherByCity(city.name, function(){
-
-        res.render("searchedLocation.hbs")
-      })
     }
   })
 })
@@ -136,36 +166,31 @@ app.listen(8080, function () {
 });
 
 
-function getDefaultWeather() {
-  for (n in defaultLocations) {
+// --- FUNCTIONS --- 
+async function getDefaultWeather() {
 
-    request(`http://api.openweathermap.org/data/2.5/weather?q=${defaultLocations[n]}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
+  defaultWeatherObjects.splice(0, defaultWeatherObjects.length)
+  defaultLocations.forEach(element => {
+    request(`http://api.openweathermap.org/data/2.5/weather?q=${element}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
       if (err) { return console.log("error:" + err); }
-
-      var weatherStatus = {
-        weather: "",
-        city: "",
-        description: "",
-        temp: "",
-        icon: ""
+      else {
+        defaultWeatherObjects.push(new Weather(
+          body.name,
+          body.weather[0].main,
+          (body.main.temp - 273.15).toFixed(1),
+          body.weather[0].description,
+          body.weather[0].icon,
+          1
+        ))
       }
+    })
+  });
 
-      weatherStatus.weather = body.weather[0].main
-      weatherStatus.description = body.weather[0].description
-      weatherStatus.city = body.name
-      weatherStatus.temp = (body.main.temp - 273.15).toFixed(1)
-      weatherStatus.icon = body.weather[0].icon
-
-      defaultWeatherObjects.push(weatherStatus)
-
-    });
-
-  }
 }
 
 function getWeatherByCity(searchedCity, callback) {
 
-  const temp = new Temperature
+  // const temp = new Temperature
 
   request(`http://api.openweathermap.org/data/2.5/weather?q=${searchedCity}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
     if (err) {
@@ -173,19 +198,13 @@ function getWeatherByCity(searchedCity, callback) {
     }
     else {
       try {
-        
-        //if statement to check if the city already exists in the database.
 
-        temp.value = (body.main.temp - 273.15).toFixed(1)
-        temp.city = body.name
-        temp.datetime = body.dt
-        
-        db.addTemperature(temp)
-        // searchedWeatherObject.weather = body.weather[0].main
-        // searchedWeatherObject.description = body.weather[0].description
-        // searchedWeatherObject.city = body.name
-        // searchedWeatherObject.temp = (body.main.temp - 273.15).toFixed(1)
-        // searchedWeatherObject.icon = body.weather[0].icon
+        searchedWeatherObject.weather = body.weather[0].main
+        searchedWeatherObject.description = body.weather[0].description
+        searchedWeatherObject.city = body.name
+        searchedWeatherObject.temp = (body.main.temp - 273.15).toFixed(1)
+        searchedWeatherObject.icon = body.weather[0].icon
+        searchedWeatherObject.dt = body.dt
         callback();
 
       } catch (error) {
@@ -197,4 +216,5 @@ function getWeatherByCity(searchedCity, callback) {
   });
 
 }
+
 

@@ -37,78 +37,31 @@
 
 <br>
 
-<div class="container">
-<div class="columns">
-  <div class="column">
-    <div class="card">
-    <figure class="image is-128x128 is-centered">
-      <img src="http://openweathermap.org/img/wn/{{iconOne}}@2x.png" alt="Placeholder image">
-    </figure>
-  <div class="card-content">
-      <div class="media-content">
-        <p class="title is-4">{{cityOne}}</p>
-        <p class="title is-5">{{tempOne}} °C</p>
+<section class="section">
+  <div class="container">
+    <div class="row columns is-multiline">
+      {{#if weather.length}}
+      {{#each weather}}
+      <div class="column is-one-forth">
+        <div class="card large">
+          <div align="center">
+          <figure class="image is-128x128">
+            <img src="http://openweathermap.org/img/wn/{{icon}}@2x.png" alt="Placeholder image">
+          </figure>
+            <p class="title" >{{name}}</p>
+            <p class="title">{{temp}} °C</p>
+            <p class="subtitle">{{weather}}</p>
+            <p class="subtitle">{{description}}</p>
+        </div>
+        </div>
       </div>
-    <div class="content">
-        <p class="subtitle is-6">{{weatherOne}}</p>
-        <p class="subtitle is-6">{{descriptionOne}}</p>
+      {{/each}}
+      {{else}}
+      <p>No weather entries</p>
+      {{/if}}
     </div>
   </div>
-</div>
-  </div>
-  <div class="column">
-    <div class="card">
-    <figure class="image is-128x128 is-centered">
-      <img src="http://openweathermap.org/img/wn/{{iconTwo}}@2x.png" alt="Placeholder image">
-    </figure>
-  <div class="card-content">
-      <div class="media-content">
-        <p class="title is-4">{{cityTwo}}</p>
-        <p class="title is-5">{{tempTwo}} °C</p>
-      </div>
-    <div class="content">
-        <p class="subtitle is-6">{{weatherTwo}}</p>
-        <p class="subtitle is-6">{{descriptionTwo}}</p>
-    </div>
-  </div>
-</div>
-  </div>
-  <div class="column">
-    <div class="card">
-    <figure class="image is-128x128 is-centered">
-      <img src="http://openweathermap.org/img/wn/{{iconThree}}@2x.png" alt="Placeholder image">
-    </figure>
-  <div class="card-content">
-      <div class="media-content">
-        <p class="title is-4">{{cityThree}}</p>
-        <p class="title is-5">{{tempThree}} °C</p>
-      </div>
-    <div class="content">
-        <p class="subtitle is-6">{{weatherThree}}</p>
-        <p class="subtitle is-6">{{descriptionThree}}</p>
-    </div>
-  </div>
-</div>
-  </div>
-  <div class="column">
-    <div class="card">
-    <figure class="image is-128x128 is-centered">
-      <img src="http://openweathermap.org/img/wn/{{iconFour}}@2x.png" alt="Placeholder image">
-    </figure>
-  <div class="card-content">
-      <div class="media-content">
-        <p class="title is-4">{{cityFour}}</p>
-        <p class="title is-5">{{tempFour}} °C</p>
-      </div>
-    <div class="content">
-        <p class="subtitle is-6">{{weatherFour}}</p>
-        <p class="subtitle is-6">{{descriptionFour}}</p>
-    </div>
-  </div>
-</div>
-  </div>
-</div>
-</div>
+</section>
 
 
 
