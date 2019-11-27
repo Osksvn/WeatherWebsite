@@ -1,0 +1,132 @@
+<section class="hero is-info is-medium is-bold">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="/" class="navbar-item">
+                        <p class="title">Weather Website</p>
+                    </a>
+                    <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </div>
+                <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="/" class="navbar-item">
+                            Home
+                        </a>
+                        <a class="navbar-item is-active" href="/compare">Compare weather</a>
+                        <a class="navbar-item" href="/database">Database items</a>
+                        <a class="navbar-item">
+                            Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {{#if city}}
+        <div class="row columns">
+            <div class="column">
+                <div class="control">
+                    <div class="select">
+                        <select>
+                            <option>Select city one</option>
+                            {{#each city}}
+                            <option value="{{id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="control">
+                    <div class="select">
+                        <select>
+                            <option>Select city two</option>
+                            {{#each city}}
+                            <option value="{{id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="control">
+                    <div class="select">
+                        <select>
+                            <option>Select city three</option>
+                            {{#each city}}
+                            <option value="{{id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="control">
+                    <button class="button is-primary">Compare</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{else}}
+    <p>no city entries</p>
+    {{/if}}
+
+</section>
+
+<section>
+    <section>
+        <canvas id="myChart" ></canvas>
+    </section>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['time', 'time two', 'time three'],
+                datasets: [{
+                    label: 'City one',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderColor: "Red",
+                    backgroundColor: "Red",
+                    borderWidth: 1,
+                    fill: false
+                }, {
+                    label: '`${city.name}`',
+                    data: [16, 12, 7, 5, 19, 10],
+                    backgroundColor: "Green",
+                    borderColor: "Green",
+                    borderWidth: 1,
+                    fill: false
+                }, {
+                    label: 'City three',
+                    data: [5, 13, 3, 19, 10, 15],
+                    backgroundColor: "Blue",
+                    borderColor: "Blue",
+                    borderWidth: 1,
+                    fill: false
+                }]
+    }, 
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    </script>
+
+</section>

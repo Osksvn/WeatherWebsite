@@ -6,6 +6,8 @@ const app = express()
 const db = require('./database')
 const Temperature = require('./models/temperature')
 const Weather = require('./models/weather')
+var d3 = require("d3");
+var Chart = require('chart.js');
 
 const defaultLocations = ["New York", "Bangkok", "Stockholm", "Paris"]
 
@@ -29,7 +31,6 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static('images'))
 
 getDefaultWeather()
-
 
 // --- ROUTERS ---
 app.route('/')
@@ -148,17 +149,54 @@ app.get('/database', function (req, res) {
 
 })
 
+app.get('/compare', function(req, res){
+
+  db.getAllCities(function (error, city) {
+    if (error) {
+      console.log("error with get all cities")
+    } else {
+
+      const model = {
+
+        city: city
+
+      }
+
+      res.render("compare.hbs", model)
+    }
+  })
+})
+
 app.get('/showCityInfo/:id', function (req, res) {
 
   const id = req.params.id
+  const model = {}
   console.log(id)
-  db.getCityNameById(id, function (city, error) {
+  db.getCityNameById(id, function (error, city) {
     if (error) {
       console.log(error)
     } else {
 
     }
   })
+  db.getWeatherByCityID(id, function(error, result){
+    if (error) {
+      console.log(error)
+    } else {
+      for (var item in result) {
+        console.log(item)
+      }
+      
+    }
+  })
+
+
+})
+
+app.get('/chart', function(req, res){
+  
+  res.sendFile("C:/Users/Osksv/Desktop/Weather/WeatherWebsite/views/chart.html")
+  // res.send(charthtml)
 })
 
 app.listen(8080, function () {
@@ -216,5 +254,52 @@ function getWeatherByCity(searchedCity, callback) {
   });
 
 }
+// CHART 
+// var myLineChart = new Chart(ctx, {
+//   type: 'line',
+//   data: data,
+//   options: options
+// });
 
+var charthtml = 
+`<canvas id="myChart" width="400" height="400"></canvas>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>`
 
