@@ -37,7 +37,7 @@
                 <div class="control">
                     <div class="select">
                         <select>
-                            <option>Select city one</option>
+                            <option id="cityone">Select city one</option>
                             {{#each city}}
                             <option value="{{id}}">{{name}}</option>
                             {{/each}}
@@ -85,16 +85,18 @@
 
 <section>
     <section>
-        <canvas id="myChart" ></canvas>
+        <canvas id="myChart"></canvas>
     </section>
     <script>
+
+        var cityone = document.getElementById('cityone').innerHTML
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['time', 'time two', 'time three'],
                 datasets: [{
-                    label: 'City one',
+                    label: "city name",
                     data: [12, 19, 3, 5, 2, 3],
                     borderColor: "Red",
                     backgroundColor: "Red",
@@ -115,7 +117,7 @@
                     borderWidth: 1,
                     fill: false
                 }]
-    }, 
+            },
             options: {
                 scales: {
                     yAxes: [{
@@ -126,6 +128,15 @@
                 }
             }
         });
+
+
+        function addData(chart, label, data) {
+            chart.data.labels.push(label);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(data);
+            });
+            chart.update();
+        }
 
     </script>
 

@@ -1,0 +1,66 @@
+<section class="hero is-small is-info is-bold">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a class="navbar-item" href="/">
+                            Home
+                        </a>
+                        <a class="navbar-item" href="/compare">Compare weather</a>
+                        <a class="navbar-item" href="/database">Database items</a>
+                        <a class="navbar-item">
+                            Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Weather website
+            </h1>
+            <h2 class="subtitle">
+                A website utilizing a weather api
+            </h2>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="title">{{cityname.name}}</h2>
+
+    {{#if data}}
+    <div class="columns">
+        <div class="column">
+            <p class="notification is-primary">Main</p>
+            {{#each data}}
+            <p>{{main}}</p>
+            {{/each}}
+        </div>
+        <div class="column">
+            <p class="notification is-danger">Temperature</p>
+            {{#each data}}
+            <p>{{temp}}</p>
+            {{/each}}
+        </div>
+        <div class="column ">
+            <p class="notification is-info">Description</p>
+            {{#each data}}
+            <p>{{desc}}</p>
+            {{/each}}
+        </div>
+        <div class="column">
+            <p class="notification is-warning">Datetime</p>
+            {{#each data}}
+            <p>{{datetime}}</p>
+            {{/each}}
+        </div>
+    </div>
+    {{else}}
+    <p>no data</p>
+    {{/if}}
+
+</section>

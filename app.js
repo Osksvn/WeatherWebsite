@@ -38,12 +38,13 @@ app.route('/')
 
   })
   .get(function (req, res) {
+    getDefaultWeather()
     runOnce = true
     const model = {
       weather: defaultWeatherObjects
     }
     res.render("home.hbs", model)
-    
+
   })
 
 app.get('/searchedLocation', function (req, res) {
@@ -63,22 +64,22 @@ app.get('/searchedLocation', function (req, res) {
         icon: searchedWeatherObject.icon
       }
 
-      db.getCityIDByName(search, function(error, result){
-          if (error) {
-            console.log("error with getCityIDByName")
-          }
-          else if (result == undefined) {
-            // insert city into database
-            console.log("no city entry, insert city")
-            if (runOnce) {
-              runOnce = false
-            
-            db.insertCity(search, function(error){
-              if(error) {
+      db.getCityIDByName(searchedWeatherObject.city, function (error, result) {
+        if (error) {
+          console.log("error with getCityIDByName")
+        }
+        else if (result == undefined) {
+          // insert city into database
+          console.log("no city entry, insert city")
+          if (runOnce) {
+            runOnce = false
+
+            db.insertCity(searchedWeatherObject.city, function (error) {
+              if (error) {
                 console.log("error")
               }
             })
-            db.getCityIDByName(search,function(error, result){
+            db.getCityIDByName(searchedWeatherObject.city, function (error, result) {
               if (error) {
                 console.log(error)
               } else {
@@ -88,35 +89,35 @@ app.get('/searchedLocation', function (req, res) {
                   searchedWeatherObject.description,
                   searchedWeatherObject.icon,
                   searchedWeatherObject.dt,
-                  result.id, function(error){
+                  result.id, function (error) {
                     if (error) console.log(error)
                   })
               }
             })
           }
-          } else {
-            // only insert weather data
-            if (runOnce) {
-              runOnce = false
-            
+        } else {
+          // only insert weather data
+          if (runOnce) {
+            runOnce = false
+
             db.insertWeather(
               searchedWeatherObject.weather,
               searchedWeatherObject.temp,
               searchedWeatherObject.description,
               searchedWeatherObject.icon,
               searchedWeatherObject.dt,
-              result.id, function(error){
+              result.id, function (error) {
                 if (error) {
                   console.log(error)
                 }
-            })
+              })
             console.log("result from app.js: " + result.id)
           }
-          }
+        }
 
       })
 
-      
+
 
       res.render("searchedLocation.hbs", model)
 
@@ -136,7 +137,6 @@ app.get('/database', function (req, res) {
     if (error) {
       console.log("error with get all cities")
     } else {
-
       const model = {
 
         city: city
@@ -149,7 +149,7 @@ app.get('/database', function (req, res) {
 
 })
 
-app.get('/compare', function(req, res){
+app.get('/compare', function (req, res) {
 
   db.getAllCities(function (error, city) {
     if (error) {
@@ -170,33 +170,29 @@ app.get('/compare', function(req, res){
 app.get('/showCityInfo/:id', function (req, res) {
 
   const id = req.params.id
-  const model = {}
-  console.log(id)
-  db.getCityNameById(id, function (error, city) {
+  var cityName
+  var datetimeArray = []
+  var datetime
+  db.getCityNameById(id, function(error, cityname){
     if (error) {
       console.log(error)
-    } else {
-
-    }
+    }else cityName = cityname
   })
-  db.getWeatherByCityID(id, function(error, result){
+  db.getWeatherByCityID(id, function (error, result) {
     if (error) {
       console.log(error)
     } else {
-      for (var item in result) {
-        console.log(item)
+      const model = {
+
+        data: result,
+        cityname: cityName
+
       }
-      
+
+      res.render("databaseDetails.hbs", model)
     }
   })
-
-
-})
-
-app.get('/chart', function(req, res){
-  
-  res.sendFile("C:/Users/Osksv/Desktop/Weather/WeatherWebsite/views/chart.html")
-  // res.send(charthtml)
+ 
 })
 
 app.listen(8080, function () {
@@ -207,12 +203,11 @@ app.listen(8080, function () {
 // --- FUNCTIONS --- 
 async function getDefaultWeather() {
 
-  defaultWeatherObjects.splice(0, defaultWeatherObjects.length)
   defaultLocations.forEach(element => {
     request(`http://api.openweathermap.org/data/2.5/weather?q=${element}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
       if (err) { return console.log("error:" + err); }
       else {
-        defaultWeatherObjects.push(new Weather(
+        defaultWeatherObjects.unshift(new Weather(
           body.name,
           body.weather[0].main,
           (body.main.temp - 273.15).toFixed(1),
@@ -220,15 +215,16 @@ async function getDefaultWeather() {
           body.weather[0].icon,
           1
         ))
+
+        defaultWeatherObjects.splice(4, defaultWeatherObjects.length)
       }
     })
   });
 
 }
 
-function getWeatherByCity(searchedCity, callback) {
 
-  // const temp = new Temperature
+function getWeatherByCity(searchedCity, callback) {
 
   request(`http://api.openweathermap.org/data/2.5/weather?q=${searchedCity}&APPID=9fd9e6e3123d143241acf644b95671cd`, { json: true }, (err, res, body) => {
     if (err) {
@@ -254,6 +250,19 @@ function getWeatherByCity(searchedCity, callback) {
   });
 
 }
+
+function timeConverter(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
 // CHART 
 // var myLineChart = new Chart(ctx, {
 //   type: 'line',
@@ -261,8 +270,8 @@ function getWeatherByCity(searchedCity, callback) {
 //   options: options
 // });
 
-var charthtml = 
-`<canvas id="myChart" width="400" height="400"></canvas>
+var charthtml =
+  `<canvas id="myChart" width="400" height="400"></canvas>
 <script>
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {

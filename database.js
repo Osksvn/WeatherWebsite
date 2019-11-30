@@ -80,7 +80,7 @@ exports.getTempAndWeatherByCityID = function(city_id, callback){
 //QUERIES FOR WEATHER
 exports.getWeatherByCityID = function(city_id, callback) {
     const query = "SELECT * FROM weather where city_id = ?"
-    db.get(query, [city_id], function(error, result){
+    db.all(query, [city_id], function(error, result){
         callback(error, result)
     })
 }

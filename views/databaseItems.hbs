@@ -2,9 +2,9 @@
   <div class="hero-head">
     <nav class="navbar">
       <div class="container">
-           <div class="navbar-brand">
+        <div class="navbar-brand">
           <a href="/" class="navbar-item">
-           <p class="title">Weather Website</p> 
+            <p class="title">Weather Website</p>
           </a>
           <span class="navbar-burger burger" data-target="navbarMenuHeroB">
             <span></span>
@@ -36,8 +36,8 @@
       {{#each city}}
       <div class="column is-one-third">
         <div class="card large">
-            <p class="title" >{{name}}</p>
-            <form method="GET" action="/showCityInfo/{{id}}" ><button class="button" >Show more</button></form>
+          <p class="title">{{name}}</p>
+          <form method="GET" action="/showCityInfo/{{id}}"><button class="button">Show more</button></form>
         </div>
       </div>
       {{/each}}
