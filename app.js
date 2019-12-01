@@ -1,12 +1,9 @@
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
-const https = require("https")
 const request = require('request');
 const app = express()
 const db = require('./database')
-const Temperature = require('./models/temperature')
 const Weather = require('./models/weather')
-var d3 = require("d3");
 var Chart = require('chart.js');
 
 const defaultLocations = ["New York", "Bangkok", "Stockholm", "Paris"]
@@ -28,7 +25,7 @@ app.engine('hbs', expressHandlebars({
   extname: '.hbs'
 }))
 
-app.use(express.static('images'))
+app.use(express.static('chart'))
 
 getDefaultWeather()
 
@@ -171,8 +168,6 @@ app.get('/showCityInfo/:id', function (req, res) {
 
   const id = req.params.id
   var cityName
-  var datetimeArray = []
-  var datetime
   db.getCityNameById(id, function(error, cityname){
     if (error) {
       console.log(error)
@@ -193,6 +188,11 @@ app.get('/showCityInfo/:id', function (req, res) {
     }
   })
  
+})
+
+app.get('/getComparison/:id', function(req, res){
+
+  
 })
 
 app.listen(8080, function () {
@@ -263,52 +263,13 @@ function timeConverter(UNIX_timestamp){
   var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
   return time;
 }
-// CHART 
+// CHART
+
+
 // var myLineChart = new Chart(ctx, {
 //   type: 'line',
 //   data: data,
 //   options: options
 // });
 
-var charthtml =
-  `<canvas id="myChart" width="400" height="400"></canvas>
-<script>
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
-});
-</script>`
 
