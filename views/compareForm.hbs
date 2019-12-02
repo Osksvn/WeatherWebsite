@@ -34,10 +34,10 @@
                 <div class="column">
                     <div class="control">
                         <div class="select">
-                            <select>
-                                <option id="cityone">Select city one</option>
+                            <select name="cityOne">
+                                <option >Select city one</option>
                                 {{#each city}}
-                                <option id="cityone" name="cityone" value="{{id}}">{{name}}</option>
+                                <option value="{{id}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
@@ -46,10 +46,10 @@
                 <div class="column">
                     <div class="control">
                         <div class="select">
-                            <select>
+                            <select name="cityTwo">
                                 <option>Select city two</option>
                                 {{#each city}}
-                                <option id="citytwo" name="citytwo" value="{{id}}">{{name}}</option>
+                                <option value="{{id}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
@@ -58,10 +58,10 @@
                 <div class="column">
                     <div class="control">
                         <div class="select">
-                            <select>
+                            <select name="cityThree">
                                 <option>Select city three</option>
                                 {{#each city}}
-                                <option  id="citythree" name="citythree" value="{{id}}">{{name}}</option>
+                                <option value="{{id}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>

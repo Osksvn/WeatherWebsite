@@ -117,10 +117,7 @@ app.get('/searchedLocation', function (req, res) {
 
       })
 
-
-
       res.render("searchedLocation.hbs", model)
-
 
     }
     else {
@@ -159,16 +156,16 @@ app.get('/compare', function (req, res) {
       var allInfos = []
 
       cities.forEach(el => {
-          db.getWeatherByCityID(el.id, function(error, weather){
-            if (error) console.log(error)
-            else allInfos.push(weather)
-          })
-        }
+        db.getWeatherByCityID(el.id, function (error, weather) {
+          if (error) console.log(error)
+          else allInfos.push(weather)
+        })
+      }
       )
 
       const model = {
         city: cities,
-        allInfos : allInfos
+        allInfos: allInfos
       }
 
       res.render("compareForm.hbs", model)
@@ -180,10 +177,10 @@ app.get('/showCityInfo/:id', function (req, res) {
 
   const id = req.params.id
   var cityName
-  db.getCityNameById(id, function(error, cityname){
+  db.getCityNameById(id, function (error, cityname) {
     if (error) {
       console.log(error)
-    }else cityName = cityname
+    } else cityName = cityname
   })
   db.getWeatherByCityID(id, function (error, result) {
     if (error) {
@@ -203,46 +200,106 @@ app.get('/showCityInfo/:id', function (req, res) {
       res.render("databaseDetails.hbs", model)
     }
   })
- 
+
 })
 
-app.post('/comparison', function(req, res){
+app.post('/comparison', function (req, res) {
 
   var body = req.body
   var weatherInfo = []
+  var tempArray1 = []
+  var tempArray2 = []
+  var tempArray3 = []
 
-  var city1 = [] 
-  db.getWeatherByCityID(body[0], function(err, result){
-    if(err){
+  db.getWeatherByCityID(body.cityOne, function (err, result) {
+    if (err) {
       console.log(err)
     }
-    else city1.push(result)
-  })
+    else {
+      weatherInfo.push(result)
 
-  var city2 = []
-  db.getWeatherByCityID(body[1], function(err, result){
-    if(err){
-      console.log(err)
+      db.getWeatherByCityID(body.cityTwo, function (err, result) {
+        if (err) {
+          console.log(err)
+        }
+        else {
+          weatherInfo.push(result)
+
+          db.getWeatherByCityID(body.cityThree, function (err, result) {
+            if (err) {
+              console.log(err)
+            }
+            else {
+              weatherInfo.push(result)
+              weatherInfo[0].forEach( el => {
+                tempArray1.push(el.temp)
+              })
+
+              weatherInfo[1].forEach( el => {
+                tempArray2.push(el.temp)
+              })
+              weatherInfo[2].forEach( el => {
+                tempArray3.push(el.temp)
+              })
+
+              console.log(tempArray1)
+
+              var chart = `
+              <script>
+              console.log(${tempArray1})
+              var ctx = document.getElementById('myChart').getContext('2d');
+              var myChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: ['time', 'time', 'time', 'time', 'time', 'time'],
+                      datasets: [{
+                          label: "city one",
+                          data: [${tempArray1}],
+                          borderColor: "Red",
+                          backgroundColor: "Red",
+                          borderWidth: 1,
+                          fill: false
+                      }, {
+                          label: 'city two name',
+                          data: [${tempArray2}],
+                          backgroundColor: "Green",
+                          borderColor: "Green",
+                          borderWidth: 1,
+                          fill: false
+                      }, {
+                          label: 'City three name',
+                          data: [${tempArray3}],
+                          backgroundColor: "Blue",
+                          borderColor: "Blue",
+                          borderWidth: 1,
+                          fill: false
+                      }]
+                  },
+                  options: {
+                      scales: {
+                          yAxes: [{
+                              ticks: {
+                                  beginAtZero: true
+                              }
+                          }]
+                      }
+                  }
+              });
+              </script> `
+              
+
+              const model = {
+                chart: chart
+              }
+
+              res.render("compare.hbs", model)
+            }
+          })
+        }
+      })
     }
-    else city2.push(result)
   })
 
-  var city3 = []
-  db.getWeatherByCityID(body[2], function(err, result){
-    if(err){
-      console.log(err)
-    }
-    else city3.push(result)
-  })
-
-  weatherInfo.push(city1, city2, city3)
-
-  const model = {
-    weatherInfo : weatherInfo
-  }
-
-  res.render("compare.hbs", model)
-  
 })
 
 app.listen(8080, function () {
@@ -301,16 +358,16 @@ function getWeatherByCity(searchedCity, callback) {
 
 }
 
-function timeConverter(UNIX_timestamp){
+function timeConverter(UNIX_timestamp) {
   var a = new Date(UNIX_timestamp * 1000);
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var year = a.getFullYear();
   var month = months[a.getMonth()];
   var date = a.getDate();
   var hour = a.getHours();
   var min = a.getMinutes();
   var sec = a.getSeconds();
-  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
   return time;
 }
 // CHART
