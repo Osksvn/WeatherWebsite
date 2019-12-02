@@ -177,6 +177,10 @@ app.get('/showCityInfo/:id', function (req, res) {
     if (error) {
       console.log(error)
     } else {
+
+      result.forEach(el => {
+        el.datetime = timeConverter(el.datetime)
+      });
       const model = {
 
         data: result,
