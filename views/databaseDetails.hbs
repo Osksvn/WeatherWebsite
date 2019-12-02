@@ -32,7 +32,7 @@
     {{#if data}}
     <div class="columns">
         <div class="column">
-            <p class="notification is-primary">Main</p>
+            <p class="notification is-primary">Overall weather</p>
             {{#each data}}
             <p>{{main}}</p>
             {{/each}}
@@ -40,7 +40,7 @@
         <div class="column">
             <p class="notification is-danger">Temperature</p>
             {{#each data}}
-            <p>{{temp}}</p>
+            <p>{{temp}} °C</p>
             {{/each}}
         </div>
         <div class="column ">
@@ -50,7 +50,7 @@
             {{/each}}
         </div>
         <div class="column">
-            <p class="notification is-warning">Datetime</p>
+            <p class="notification is-warning">Date</p>
             {{#each data}}
             <p>{{datetime}}</p>
             {{/each}}
