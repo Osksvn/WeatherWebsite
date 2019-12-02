@@ -5,6 +5,9 @@ const app = express()
 const db = require('./database')
 const Weather = require('./models/weather')
 var Chart = require('chart.js');
+app.use(express.urlencoded())
+app.use(express.json())
+
 
 const defaultLocations = ["New York", "Bangkok", "Stockholm", "Paris"]
 
@@ -148,18 +151,27 @@ app.get('/database', function (req, res) {
 
 app.get('/compare', function (req, res) {
 
-  db.getAllCities(function (error, city) {
+  db.getAllCities(function (error, cities) {
     if (error) {
       console.log("error with get all cities")
     } else {
 
+      var allInfos = []
+
+      cities.forEach(el => {
+          db.getWeatherByCityID(el.id, function(error, weather){
+            if (error) console.log(error)
+            else allInfos.push(weather)
+          })
+        }
+      )
+
       const model = {
-
-        city: city
-
+        city: cities,
+        allInfos : allInfos
       }
 
-      res.render("compare.hbs", model)
+      res.render("compareForm.hbs", model)
     }
   })
 })
@@ -194,8 +206,42 @@ app.get('/showCityInfo/:id', function (req, res) {
  
 })
 
-app.get('/getComparison/:id', function(req, res){
+app.post('/comparison', function(req, res){
 
+  var body = req.body
+  var weatherInfo = []
+
+  var city1 = [] 
+  db.getWeatherByCityID(body[0], function(err, result){
+    if(err){
+      console.log(err)
+    }
+    else city1.push(result)
+  })
+
+  var city2 = []
+  db.getWeatherByCityID(body[1], function(err, result){
+    if(err){
+      console.log(err)
+    }
+    else city2.push(result)
+  })
+
+  var city3 = []
+  db.getWeatherByCityID(body[2], function(err, result){
+    if(err){
+      console.log(err)
+    }
+    else city3.push(result)
+  })
+
+  weatherInfo.push(city1, city2, city3)
+
+  const model = {
+    weatherInfo : weatherInfo
+  }
+
+  res.render("compare.hbs", model)
   
 })
 
