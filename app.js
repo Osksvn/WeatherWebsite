@@ -4,7 +4,6 @@ const request = require('request');
 const app = express()
 const db = require('./database')
 const Weather = require('./models/weather')
-var Chart = require('chart.js');
 app.use(express.urlencoded())
 app.use(express.json())
 
@@ -203,6 +202,46 @@ app.get('/showCityInfo/:id', function (req, res) {
 
 })
 
+app.get('/api/:city', function (req, res) {
+
+  const city = req.params.city
+  var tempArray = []
+  var datetimeArray = []
+  var mainArray = []
+  var descArray = []
+
+  db.getCityIDByName(city, function (error, id) {
+    if (error) {
+      res.render("apiError.hbs", {})
+    } 
+    else if (id == undefined){
+      res.render("apiError.hbs", {})
+    }
+    else {
+      db.getWeatherByCityID(id.id, function (error, weather) {
+        if (error) console.log(error)
+        else {
+          weather.forEach(el => {
+            tempArray.push(el.temp)
+            datetimeArray.push(el.datetime)
+            mainArray.push(el.main)
+            descArray.push(el.desc)
+          })
+          var result = {
+            city: city,
+            temp: tempArray,
+            dates: datetimeArray,
+            main: mainArray,
+            desc: descArray
+          }
+        }
+        res.send(result)
+      })
+    }
+  })
+
+})
+
 app.post('/comparison', function (req, res) {
 
   var body = req.body
@@ -210,6 +249,12 @@ app.post('/comparison', function (req, res) {
   var tempArray1 = []
   var tempArray2 = []
   var tempArray3 = []
+  var datetimeArray1 = []
+  var datetimeArray2 = []
+  var datetimeArray3 = []
+  var cityNameOne = ""
+  var cityNameTwo = ""
+  var cityNameThree = ""
 
   db.getWeatherByCityID(body.cityOne, function (err, result) {
     if (err) {
@@ -231,68 +276,132 @@ app.post('/comparison', function (req, res) {
             }
             else {
               weatherInfo.push(result)
-              weatherInfo[0].forEach( el => {
-                tempArray1.push(el.temp)
-              })
 
-              weatherInfo[1].forEach( el => {
-                tempArray2.push(el.temp)
-              })
-              weatherInfo[2].forEach( el => {
-                tempArray3.push(el.temp)
-              })
+              db.getCityNameById(body.cityOne, function (err, name) {
+                if (err) console.log(err)
+                else {
+                  cityNameOne = name.name
 
-              console.log(tempArray1)
+                  db.getCityNameById(body.cityTwo, function (err, name) {
+                    if (err) console.log(err)
+                    else {
+                      cityNameTwo = name.name
 
-              var chart = `
-              <script>
-              console.log(${tempArray1})
-              var ctx = document.getElementById('myChart').getContext('2d');
-              var myChart = new Chart(ctx, {
-                  type: 'line',
-                  data: {
-                      labels: ['time', 'time', 'time', 'time', 'time', 'time'],
-                      datasets: [{
-                          label: "city one",
-                          data: [${tempArray1}],
-                          borderColor: "Red",
-                          backgroundColor: "Red",
-                          borderWidth: 1,
-                          fill: false
-                      }, {
-                          label: 'city two name',
-                          data: [${tempArray2}],
-                          backgroundColor: "Green",
-                          borderColor: "Green",
-                          borderWidth: 1,
-                          fill: false
-                      }, {
-                          label: 'City three name',
-                          data: [${tempArray3}],
-                          backgroundColor: "Blue",
-                          borderColor: "Blue",
-                          borderWidth: 1,
-                          fill: false
-                      }]
-                  },
-                  options: {
-                      scales: {
-                          yAxes: [{
-                              ticks: {
-                                  beginAtZero: true
+                      db.getCityNameById(body.cityThree, function (err, name) {
+                        if (err) console.log(err)
+                        else {
+                          cityNameThree = name.name
+
+                          weatherInfo[0].forEach(el => {
+                            tempArray1.push(el.temp)
+                            el.datetime = simplifiedDate(el.datetime)
+                            datetimeArray1.push('"'+ el.datetime + '"')
+                          })
+                          weatherInfo[1].forEach(el => {
+                            tempArray2.push(el.temp)
+                            el.datetime = simplifiedDate(el.datetime)
+                            datetimeArray2.push('"'+ el.datetime + '"')
+                          })
+                          weatherInfo[2].forEach(el => {
+                            tempArray3.push(el.temp)
+                            el.datetime = simplifiedDate(el.datetime)
+                            datetimeArray3.push('"'+ el.datetime + '"')
+                          })
+
+
+                          var chart = `
+                          <script>
+                          var chartOne = document.getElementById('chartOne').getContext('2d');
+                          var chartTwo = document.getElementById('chartTwo').getContext('2d');
+                          var chartThree = document.getElementById('chartThree').getContext('2d');
+
+                          var chart1 = new Chart(chartOne, {
+                              type: 'line',
+                              data: {
+                                  labels: [${datetimeArray1}],
+                                  datasets: [{
+                                      label: "${cityNameOne}",
+                                      data: [${tempArray1}],
+                                      borderColor: "Red",
+                                      backgroundColor: "Red",
+                                      borderWidth: 1,
+                                      fill: false
+                                  }]
+                              },
+                              options: {
+                                  scales: {
+                                      yAxes: [{
+                                          ticks: {
+                                              beginAtZero: true
+                                          }
+                                      }]
+                                  }
                               }
-                          }]
-                      }
-                  }
-              });
-              </script> `
-              
+                          });
 
-              const model = {
-                chart: chart
-              }
+                          var chart2 = new Chart(chartTwo, {
+                            type: 'line',
+                            data: {
+                                labels: [${datetimeArray2}],
+                                datasets: [{
+                                    label: "${cityNameTwo}",
+                                    data: [${tempArray2}],
+                                    borderColor: "Blue",
+                                    backgroundColor: "Blue",
+                                    borderWidth: 1,
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
 
-              res.render("compare.hbs", model)
+                        var chart3 = new Chart(chartThree, {
+                          type: 'line',
+                          data: {
+                              labels: [${datetimeArray3}],
+                              datasets: [{
+                                  label: "${cityNameThree}",
+                                  data: [${tempArray3}],
+                                  borderColor: "Green",
+                                  backgroundColor: "Green",
+                                  borderWidth: 1,
+                                  fill: false
+                              }]
+                          },
+                          options: {
+                              scales: {
+                                  yAxes: [{
+                                      ticks: {
+                                          beginAtZero: true
+                                      }
+                                  }]
+                              }
+                          }
+                      });
+                          </script> `
+
+
+                          const model = {
+                            chart: chart
+                          }
+
+                          res.render("compare.hbs", model)
+
+
+                        }
+                      })
+                    }
+                  })
+                }
+              })
             }
           })
         }
@@ -370,13 +479,19 @@ function timeConverter(UNIX_timestamp) {
   var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
   return time;
 }
-// CHART
 
+function simplifiedDate(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
 
-// var myLineChart = new Chart(ctx, {
-//   type: 'line',
-//   data: data,
-//   options: options
-// });
+  var time = date + " " + month + " " + hour + ":" + min;
+  return time;
+
+}
 
 
