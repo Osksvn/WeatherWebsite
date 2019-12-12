@@ -1,4 +1,4 @@
-<section class="hero is-large is-danger is-bold">
+<section class="hero is-info is-medium is-bold">
   <div class="hero-head">
     <nav class="navbar">
       <div class="container">
@@ -18,27 +18,29 @@
               Home
             </a>
             <a class="navbar-item" href="/compare">Compare weather</a>
-            <a class="navbar-item" href="/database">Database items</a>
+            <a class="navbar-item is-active" href="/database">Database items</a>
           </div>
         </div>
       </div>
     </nav>
   </div>
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-        No city found
-      </h1>
-      <h2 class="subtitle">
-        Please try again
-      </h2>
-      <form method="GET" action="/searchedLocation">
-        <input class="input" name="search" id="search" type="text" placeholder="Search for a city">
-        <div class="control">
-          <br>
-          <button class="button is-primary">Search</button>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row columns is-multiline">
+      {{#if city.length}}
+      {{#each city}}
+      <div class="column is-one-third">
+        <div class="card large">
+          <p class="title">{{name}}</p>
+          <form method="GET" action="/showCityInfo/{{id}}"><button class="button">Show more</button></form>
         </div>
-      </form>
+      </div>
+      {{/each}}
+      {{else}}
+      <p>No city entries</p>
+      {{/if}}
     </div>
   </div>
 </section>

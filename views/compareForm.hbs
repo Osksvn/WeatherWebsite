@@ -1,0 +1,84 @@
+<section class="hero is-info is-medium is-bold">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="/" class="navbar-item">
+                        <p class="title">Weather Website</p>
+                    </a>
+                    <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </div>
+                <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="/" class="navbar-item">
+                            Home
+                        </a>
+                        <a class="navbar-item is-active" href="/compare">Compare weather</a>
+                        <a class="navbar-item" href="/database">Database items</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <form method="post" action="/comparison">
+        <div class="container">
+            {{#if city}}
+            <div class="row columns">
+                <div class="column">
+                    <div class="control">
+                        <div class="select">
+                            <select name="cityOne">
+                                <option >Select city one</option>
+                                {{#each city}}
+                                <option value="{{id}}">{{name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="control">
+                        <div class="select">
+                            <select name="cityTwo">
+                                <option>Select city two</option>
+                                {{#each city}}
+                                <option value="{{id}}">{{name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="control">
+                        <div class="select">
+                            <select name="cityThree">
+                                <option>Select city three</option>
+                                {{#each city}}
+                                <option value="{{id}}">{{name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="control">
+                        <button class="button is-primary">Compare</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    {{else}}
+    <p>no city entries</p>
+    {{/if}}
+
+</section>

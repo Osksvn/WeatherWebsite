@@ -1,0 +1,45 @@
+<section class="hero is-info is-medium is-bold">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="/" class="navbar-item">
+                        <p class="title">Weather Website</p>
+                    </a>
+                    <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </div>
+                <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="/" class="navbar-item">
+                            Home
+                        </a>
+                        <a class="navbar-item is-active" href="/compare">Compare weather</a>
+                        <a class="navbar-item" href="/database">Database items</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row columns is-multiline">
+            <div class="column is-one-third">
+                <canvas id="chartOne"></canvas>
+            </div>
+            <div class="column is-one-third">
+                <canvas id="chartTwo"></canvas>
+            </div>
+            <div class="column is-one-third">
+                <canvas id="chartThree"></canvas>
+            </div>
+
+        </div>
+    </div>
+</section>
+{{{chart}}}
