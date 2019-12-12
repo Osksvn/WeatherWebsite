@@ -8,5 +8,19 @@ A data sharing api is avaiable on /api/{a city name}, e.g localhost:8080/api/Sto
 
 This website was created by Oskar Svensson, Malo Briant and Hazem Zr :smiley: 
 
+To test it out. 
+
+1. Download Node.js https://nodejs.org/en/
+
+2. Fork or download the repository
+
+3. In the folder of the repository, type in "npm i" in the cmd or any other shell. 
+
+4. type in "node app.js" in the cmd. 
+
+5. Browse to localhost:8080
+
+6. Enjoy :star: 
+
 Kasetsart University 
 Department of Computer Science 
