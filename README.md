@@ -14,7 +14,7 @@ To test it out.
 
 2. Fork or download the repository
 
-3. In the folder of the repository, type in "npm i" in the cmd or any other shell. 
+3. In the cmd or any other shell, navigate inside the folder of the project and type in "npm i".
 
 4. type in "node app.js" in the cmd. 
 
